@@ -4,15 +4,19 @@ import { AI_API_URL, AI_MODEL } from '../constants';
 const AI_TOKEN = import.meta.env.VITE_AI_TOKEN;
 
 export const askAI = async (messages, context) => {
-  const systemPrompt = `You are a dashboard assistant for the ISS and Space News platform.
-You can ONLY answer questions using the provided dashboard data.
-If information is unavailable in dashboard state, respond:
-'I can only answer based on current ISS and News dashboard data.'
+  const systemPrompt = `You are AstroAI, the intelligent assistant for the ISS Tracker & Space News Dashboard.
+Your purpose is to provide insights based on LIVE TELEMETRY and RECENT NEWS.
+
+STRICT GROUNDING RULES:
+1. ONLY use the "CURRENT DASHBOARD DATA" provided below.
+2. If the user asks for information NOT in the data, politely explain that your access is restricted to real-time orbital and news telemetry.
+3. Be concise, professional, and slightly "futuristic" in tone.
+4. If asked about ISS location, mention the coordinates and nearest city/area if available.
 
 CURRENT DASHBOARD DATA:
 ${JSON.stringify(context, null, 2)}
 
-Strictly follow the rules above. Do not hallucinate.`;
+Response format: Markdown.`;
 
   try {
     const { data } = await axios.post(
@@ -21,10 +25,13 @@ Strictly follow the rules above. Do not hallucinate.`;
         model: AI_MODEL,
         messages: [
           { role: 'system', content: systemPrompt },
-          ...messages.map(m => ({ role: m.role, content: m.content }))
+          ...messages.map(m => ({ 
+            role: m.role === 'assistant' ? 'assistant' : 'user', 
+            content: m.content 
+          }))
         ],
         max_tokens: 500,
-        temperature: 0.7,
+        temperature: 0.4, // Lower temperature for more grounded responses
       },
       {
         headers: {

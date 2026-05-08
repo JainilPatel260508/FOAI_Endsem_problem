@@ -10,18 +10,20 @@ export const fetchNews = async (category = 'general', query = '') => {
   
   if (cachedData) return cachedData;
 
-  // Note: NewsAPI usually blocks client-side requests from localhost on free tier
-  // If this fails, we could use a proxy or just warn the user.
   try {
-    const { data } = await axios.get(`${NEWS_API_BASE}/top-headlines`, {
-      params: {
-        country: 'us',
-        category: category !== 'general' ? category : undefined,
-        q: query || undefined,
-        apiKey: API_KEY,
-        pageSize: 20
-      }
+    const params = new URLSearchParams({
+      country: 'us',
+      apiKey: API_KEY,
+      pageSize: '20'
     });
+
+    if (category !== 'general') params.append('category', category);
+    if (query) params.append('q', query);
+
+    const targetUrl = `${NEWS_API_BASE}/top-headlines?${params.toString()}`;
+    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`;
+
+    const { data } = await axios.get(proxyUrl);
 
     if (data.status === 'ok') {
       cacheWithExpiry(cacheKey, data.articles, NEWS_CACHE_TTL_MS);
@@ -30,6 +32,7 @@ export const fetchNews = async (category = 'general', query = '') => {
     throw new Error(data.message || 'Failed to fetch news');
   } catch (error) {
     console.error('News fetch error:', error);
-    throw error;
+    // Return empty array as fallback instead of throwing to keep UI stable
+    return [];
   }
 };
