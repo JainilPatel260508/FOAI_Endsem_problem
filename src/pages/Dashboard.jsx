@@ -37,17 +37,19 @@ const Dashboard = () => {
   }, [setISSData]);
 
   const loadInitialData = async () => {
-    try {
-      const astros = await fetchAstronauts();
-      setAstronauts(astros);
-      
-      setNewsLoading(true);
-      const newsData = await fetchNews(category);
+    // Load Astronauts (Independent)
+    fetchAstronauts().then(astros => {
+      if (astros) setAstronauts(astros);
+    }).catch(err => console.error("Astronauts fetch failed:", err));
+
+    // Load News (Independent)
+    setNewsLoading(true);
+    fetchNews(category).then(newsData => {
       setNews(newsData);
-    } catch (error) {
-      toast.error("Failed to fetch initial telemetry data.");
-      setNewsError(error.message);
-    }
+    }).catch(err => {
+      setNewsError(err.message);
+      toast.error("Failed to fetch space news.");
+    });
   };
 
   useEffect(() => {

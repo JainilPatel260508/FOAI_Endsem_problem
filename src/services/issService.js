@@ -7,29 +7,27 @@ import { ISS_POSITION_URL, ISS_ASTROS_URL } from '../constants';
  * Returns: latitude, longitude, altitude, velocity (km/h), timestamp
  */
 export const fetchISSPosition = async () => {
-  const { data } = await axios.get(ISS_POSITION_URL);
+  const response = await fetch(ISS_POSITION_URL);
+  const data = await response.json();
   return {
     latitude:  parseFloat(data.latitude),
     longitude: parseFloat(data.longitude),
-    altitude:  parseFloat(data.altitude),   // km
-    velocity:  parseFloat(data.velocity),   // km/h
+    altitude:  parseFloat(data.altitude),
+    velocity:  parseFloat(data.velocity),
     timestamp: data.timestamp,
   };
 };
 
-/**
- * Fetch astronauts currently in space.
- * Uses corsproxy.io to bypass CORS on the HTTP open-notify endpoint.
- */
 export const fetchAstronauts = async () => {
   try {
-    const { data } = await axios.get(ISS_ASTROS_URL);
+    const response = await fetch(ISS_ASTROS_URL);
+    if (!response.ok) throw new Error('Proxy error');
+    const data = await response.json();
     // corsproxy.io wraps the response — handle both wrapped and direct
     const parsed = typeof data === 'string' ? JSON.parse(data) : data;
     return parsed;
-  } catch {
-    // Fallback: direct call (works in some environments)
-    const { data } = await axios.get('https://corsproxy.io/?url=http://api.open-notify.org/astros.json');
-    return data;
+  } catch (error) {
+    console.warn('AstroHub | Astronauts fetch failed, using fallback empty state');
+    return { people: [], number: 0 };
   }
 };
