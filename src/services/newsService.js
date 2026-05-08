@@ -24,10 +24,11 @@ export const fetchNews = async (category = 'general', query = '') => {
     const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`;
 
     const { data } = await axios.get(proxyUrl);
+    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
 
-    if (data.status === 'ok') {
-      cacheWithExpiry(cacheKey, data.articles, NEWS_CACHE_TTL_MS);
-      return data.articles;
+    if (parsed.status === 'ok') {
+      cacheWithExpiry(cacheKey, parsed.articles, NEWS_CACHE_TTL_MS);
+      return parsed.articles;
     }
     throw new Error(data.message || 'Failed to fetch news');
   } catch (error) {
