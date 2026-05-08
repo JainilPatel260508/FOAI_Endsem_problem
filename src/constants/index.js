@@ -6,8 +6,9 @@ export const ISS_ASTROS_URL     = 'https://corsproxy.io/?url=http://api.open-not
 export const NEWS_API_BASE      = 'https://newsapi.org/v2';
 export const NEWS_PROXY_BASE    = 'https://api.allorigins.win/get?url=';
 
-// HuggingFace AI
-export const AI_API_URL         = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
+// HuggingFace AI (Using the modern Router API)
+export const AI_API_URL         = 'https://router.huggingface.co/v1/chat/completions';
+export const AI_MODEL           = 'meta-llama/Llama-3.1-8B-Instruct';
 
 // ISS tracking config
 export const ISS_POLL_INTERVAL  = 15_000;   // 15 seconds
