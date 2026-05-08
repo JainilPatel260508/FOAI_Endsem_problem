@@ -2,9 +2,8 @@
 export const ISS_POSITION_URL   = 'https://api.wheretheiss.at/v1/satellites/25544';
 export const ISS_ASTROS_URL     = 'https://corsproxy.io/?url=http://api.open-notify.org/astros.json';
 
-// News API — uses CORS proxy to bypass browser restrictions
-export const NEWS_API_BASE      = 'https://newsapi.org/v2';
-export const NEWS_PROXY_BASE    = 'https://api.allorigins.win/get?url=';
+// Space News API (SNAPI v4) - CORS-friendly, no API key required
+export const NEWS_API_BASE      = 'https://api.spaceflightnewsapi.net/v4/articles';
 
 // HuggingFace AI (Using the modern Router API)
 export const AI_API_URL         = 'https://router.huggingface.co/v1/chat/completions';
@@ -36,5 +35,5 @@ export const NEWS_CATEGORIES = [
 
 // LocalStorage keys
 export const LS_THEME          = 'iss_dashboard_theme';
-export const LS_NEWS_CACHE     = 'iss_dashboard_news_cache';
+export const LS_NEWS_CACHE     = 'iss_dashboard_news_cache_v2';
 export const LS_CHAT_MESSAGES  = 'iss_dashboard_chat_messages';
