@@ -4,6 +4,11 @@ import { AI_API_URL, AI_MODEL } from '../constants';
 const AI_TOKEN = import.meta.env.VITE_AI_TOKEN;
 
 export const askAI = async (messages, context) => {
+  if (!AI_TOKEN) {
+    console.error('AI API Error: VITE_AI_TOKEN is missing. Please check your .env file or Vercel environment variables.');
+    throw new Error('AI configuration missing.');
+  }
+
   const systemPrompt = `You are AstroAI, the intelligent assistant for the ISS Tracker & Space News Dashboard.
 Your purpose is to provide insights based on LIVE TELEMETRY and RECENT NEWS.
 
@@ -31,7 +36,7 @@ Response format: Markdown.`;
           }))
         ],
         max_tokens: 500,
-        temperature: 0.4, // Lower temperature for more grounded responses
+        temperature: 0.4,
       },
       {
         headers: {
@@ -41,9 +46,14 @@ Response format: Markdown.`;
       }
     );
 
+    if (!data.choices || !data.choices[0]) {
+      throw new Error('Invalid response from AI provider.');
+    }
+
     return data.choices[0].message.content.trim();
   } catch (error) {
-    console.error('AI API error:', error.response?.data || error.message);
-    throw new Error('AI Assistant is currently unavailable.');
+    const errorMsg = error.response?.data?.error?.message || error.message;
+    console.error('AI API error details:', errorMsg);
+    throw new Error(`AI processing failed: ${errorMsg}`);
   }
 };
